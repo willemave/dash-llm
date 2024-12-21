@@ -1,4 +1,5 @@
 import NavigationController from "controllers/NavigationController";
+import { SalesData } from '../components/pages/Sales';
 
 interface Message {
   role: 'system' | 'user' | 'assistant' | 'function';
@@ -48,6 +49,13 @@ Assistant: "Navigating to Sales page now... Done! You're now on the Sales page."
       navigateToHome: () => NavigationController.navigateToHome(),
       navigateToSales: () => NavigationController.navigateToSales(),
       navigateToAccount: () => NavigationController.navigateToAccount(),
+      updateChartData: (newData: SalesData[]) => this.updateChartData(newData),
+      changeLocation: (args: { location: string }) => {
+        if ((window as any).changeLocation) {
+          return (window as any).changeLocation(args.location);
+        }
+        return false;
+      },
     };
 
     // Define function schemas for OpenAI
@@ -66,6 +74,42 @@ Assistant: "Navigating to Sales page now... Done! You're now on the Sales page."
         name: "navigateToAccount",
         description: "Navigate to the account page",
         parameters: { type: "object", properties: {} }
+      },
+      {
+        name: "updateChartData",
+        description: "Update the sales chart data with new data",
+        parameters: {
+          type: "object",
+          properties: {
+            newData: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  date: { type: "string" },
+                  location: { type: "string" },
+                  sales: { type: "number" }
+                },
+                required: ["date", "location", "sales"]
+              }
+            }
+          },
+          required: ["newData"]
+        }
+      },
+      {
+        name: "changeLocation",
+        description: "Change the current location filter in the sales view",
+        parameters: {
+          type: "object",
+          properties: {
+            location: {
+              type: "string",
+              description: "The location to filter by (e.g., 'New York', 'London', 'All Locations')"
+            }
+          },
+          required: ["location"]
+        }
       }
     ];
   }
@@ -85,6 +129,13 @@ Assistant: "Navigating to Sales page now... Done! You're now on the Sales page."
     
     const result = await func(JSON.parse(args));
     return JSON.stringify(result);
+  }
+
+  private updateChartData(newData: SalesData[]): void {
+    // Expose the API to update chart data
+    if ((window as any).updateChartData) {
+      (window as any).updateChartData(newData);
+    }
   }
 
   public async sendMessage(messages: Message[]): Promise<string> {
