@@ -1,4 +1,4 @@
-import NavigationController from "controllers/NavigationController";
+import NavigationController from "../controllers/NavigationController";
 import { SalesData } from '../components/pages/Sales';
 
 interface Message {

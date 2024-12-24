@@ -1,46 +1,43 @@
 import React from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
 import NavigationController from '../../controllers/NavigationController';
-import './Layout.css';
 import Chat from '../chat/Chat';
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout = ({ children, ref }: { 
+  children: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
+}) => {
   const { navigateTo, currentRoute } = useNavigation();
 
-  // Set up the navigation callback when the component mounts
   React.useEffect(() => {
     NavigationController.setNavigationCallback(navigateTo);
   }, [navigateTo]);
 
   return (
-    <div className="layout">
-      <nav className="sidebar">
-        <ul>
-          <li
-            className={currentRoute === 'home' ? 'active' : ''}
-            onClick={() => navigateTo('home')}
-          >
-            Home
-          </li>
-          <li
-            className={currentRoute === 'sales' ? 'active' : ''}
-            onClick={() => navigateTo('sales')}
-          >
-            Sales
-          </li>
-          <li
-            className={currentRoute === 'account' ? 'active' : ''}
-            onClick={() => navigateTo('account')}
-          >
-            Account
-          </li>
+    <div className="grid grid-cols-[200px_1fr_300px] min-h-screen" ref={ref}>
+      <nav className="bg-secondary p-4">
+        <ul className="space-y-2">
+          {['home', 'sales', 'account'].map((route) => (
+            <li key={route}>
+              <button
+                className={`w-full text-left p-2 rounded ${
+                  currentRoute === route 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'hover:bg-secondary-foreground/10'
+                }`}
+                onClick={() => navigateTo(route as any)}
+              >
+                {route.charAt(0).toUpperCase() + route.slice(1)}
+              </button>
+            </li>
+          ))}
         </ul>
       </nav>
-      <main className="main-content">
+      <main className="p-6">
         {children}
       </main>
-      <aside className="chat-interface">
-        <h2>Chat Interface</h2>
+      <aside className="bg-secondary p-4">
+        <h2 className="text-lg font-semibold mb-4">Chat Interface</h2>
         <Chat />
       </aside>
     </div>
