@@ -42,6 +42,14 @@ class NavigationController {
     return false;
   }
 
+  public navigateToReports(): boolean {
+    if (this.navigationCallback) {
+      this.navigationCallback('reports');
+      return true;
+    }
+    return false;
+  }
+
   public getCurrentRoute(): NavigationRoute | null {
     // This will be implemented when we connect it to the NavigationContext
     return null;

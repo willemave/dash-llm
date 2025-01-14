@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export type NavigationRoute = 'home' | 'sales' | 'account';
+export type NavigationRoute = 'home' | 'sales' | 'account' | 'reports';
 
 interface NavigationContextType {
   currentRoute: NavigationRoute;

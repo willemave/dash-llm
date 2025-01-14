@@ -1,0 +1,23 @@
+.sales-page {
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.filters select {
+  padding: 5px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+} 
+

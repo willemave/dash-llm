@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import OpenAIService from '../../services/OpenAIService';
@@ -14,7 +13,6 @@ interface Message {
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [plan, setPlan] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,14 +20,10 @@ const Chat: React.FC = () => {
     setIsPending(true);
     try {
       const response = await OpenAIService.sendMessage([...messages, { role: 'user', content: message }]);
-      if (response.toLowerCase().includes('plan:')) {
-        setPlan(response);
-      } else {
-        setMessages(prev => [...prev, 
-          { role: 'user', content: message },
-          { role: 'assistant', content: response }
-        ]);
-      }
+      setMessages(prev => [...prev, 
+        { role: 'user', content: message },
+        { role: 'assistant', content: response }
+      ]);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -38,23 +32,7 @@ const Chat: React.FC = () => {
       }
     } finally {
       setIsPending(false);
-    }
-  };
-
-  const handleProceed = async () => {
-    if (plan) {
-      setIsPending(true);
-      try {
-        const response = await OpenAIService.proceedWithPlan(messages);
-        setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-        setPlan(null);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
-      }
+      setInputMessage('');
     }
   };
 
@@ -88,30 +66,11 @@ const Chat: React.FC = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             disabled={isPending}
           />
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending || !inputMessage.trim()}>
             Send
           </Button>
         </div>
       </form>
-
-      {plan && (
-        <Dialog open={!!plan} onOpenChange={() => setPlan(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Proposed Plan</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">{plan}</div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setPlan(null)}>
-                Cancel
-              </Button>
-              <Button onClick={handleProceed} disabled={isPending}>
-                Proceed with Plan
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
     </Card>
   );
 };

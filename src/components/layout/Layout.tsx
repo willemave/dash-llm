@@ -17,7 +17,7 @@ const Layout = ({ children, ref }: {
     <div className="grid grid-cols-[200px_1fr_300px] min-h-screen" ref={ref}>
       <nav className="bg-secondary p-4">
         <ul className="space-y-2">
-          {['home', 'sales', 'account'].map((route) => (
+          {['home', 'sales', 'account', 'reports'].map((route) => (
             <li key={route}>
               <button
                 className={`w-full text-left p-2 rounded ${
